@@ -4,14 +4,11 @@ import { Server } from "socket.io";
 import cors from "@fastify/cors";
 
 import config from "@/config";
+import socket from "./features/sockets";
 
 declare module "fastify" {
   interface FastifyInstance {
-    io: Server<{
-      "join-room": (...args: [string, string]) => void;
-      "user-connected": (...args: [string]) => void;
-      "user-disconnected": (...args: [string]) => void;
-    }>;
+    io: Server;
   }
 }
 
@@ -33,17 +30,7 @@ const getApp = () => {
   const startTime = new Date();
 
   app.ready(() => {
-    app.io.on("connection", (socket) => {
-      console.log("socket connected");
-      socket.on("join-room", (roomId, userId) => {
-        socket.join(roomId);
-        socket.to(roomId).emit("user-connected", userId);
-
-        socket.on("disconnect", () => {
-          socket.to(roomId).emit("user-disconnected", userId);
-        });
-      });
-    });
+    socket(app.io);
   });
 
   app.route({
