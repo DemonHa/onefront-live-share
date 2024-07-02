@@ -7,7 +7,7 @@ const envs = cleanEnv(import.meta.env, {
   }),
   VITE_PEER_SERVER_HOST: str({
     desc: "Peer server url, used to establish connections between peerjs clients",
-    default: "http://localhost",
+    default: "localhost",
   }),
   VITE_PEER_SERVER_PORT: num({
     desc: "Peer server url, used to establish connections between peerjs clients",
