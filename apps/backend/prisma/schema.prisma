@@ -14,4 +14,18 @@ model Messages {
   id      String @id @default(cuid())
   sender  String
   content String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Rooms {
+  id          String   @id @default(cuid())
+  owner       String
+  password    String
+  scheduledAt DateTime
+  completed   Boolean  @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
