@@ -10,6 +10,14 @@ export const getActiveRooms = () => {
   });
 };
 
+export const getRoomById = (id: Rooms["id"]) => {
+  return prisma.rooms.findUnique({
+    where: {
+      id,
+    },
+  });
+};
+
 export const markRoomAsCompleted = (id: Rooms["id"]) => {
   return prisma.rooms.update({
     where: {

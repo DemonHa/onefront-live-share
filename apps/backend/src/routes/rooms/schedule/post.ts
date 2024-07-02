@@ -14,6 +14,7 @@ export default route({
       },
       required: ["userId", "scheduledAt"],
     },
+    tags: ["rooms"],
   },
   handler: async (req, res) => {
     const { userId, scheduledAt } = req.body;

@@ -1,43 +1,64 @@
 import { Socket } from "socket.io";
-import { v4 as uuidv4 } from "uuid";
 
 import { Events } from "../events";
+import { getRoomById } from "@/services/rooms";
+import { getUserIdFromSocket } from "../utils";
 import { rooms } from "../rooms";
 
-export default function joinRoom(
+export default async function joinRoom(
   socket: Socket,
   roomId: string,
-  userId: string,
-  password?: string
+  peerId: string,
+  password: string
 ) {
-  let room = rooms[roomId];
+  const roomInformation = await getRoomById(roomId);
+  const { userId } = getUserIdFromSocket(socket) ?? {};
 
-  if (room) {
-    // User can't join if the password is incorrect or locked, or socket is already on the room
-    if (
-      room.password !== password ||
-      room.locked ||
-      room.sockets.has(socket.id)
-    ) {
-      return;
-    }
-  } else {
-    room = rooms[roomId] = {
-      owner: socket.id,
-      password: uuidv4(),
-      sockets: new Set([socket.id]),
-      locked: false,
-    };
+  if (!userId) {
+    return socket.emit(Events.ERROR, {
+      code: 401,
+      message: "You need to be authenticated",
+    });
+  }
+
+  if (!roomInformation || roomInformation.completed) {
+    return socket.emit(Events.ERROR, {
+      code: 404,
+      message: "Room does not exists",
+    });
+  }
+
+  // Check for the user password to join the room
+  // Skip this check if the current user is the owner
+  if (
+    userId !== roomInformation.owner &&
+    roomInformation.password !== password
+  ) {
+    return socket.emit(Events.ERROR, {
+      code: 403,
+      message: "Incorrect password",
+    });
+  }
+
+  if (!rooms[roomId]) {
+    rooms[roomId] = { locked: false, sockets: new Set(socket.id) };
+  }
+
+  // We are sure a room exists
+  const room = rooms[roomId]!;
+
+  if (room.locked) {
+    return socket.emit(Events.ERROR, { code: 403, message: "Room is locked" });
   }
 
   // Join user to the room
   room.sockets.add(socket.id);
 
   socket.join(roomId);
-  socket.to(roomId).emit(Events.USER_CONNECTED, userId);
+  socket.to(roomId).emit(Events.USER_CONNECTED, peerId);
 
   socket.on("disconnect", () => {
-    socket.to(roomId).emit(Events.USER_DISCONNECTED, userId);
+    socket.to(roomId).emit(Events.USER_DISCONNECTED, peerId);
     room.sockets.delete(socket.id);
 
     if (room.sockets.size === 0) {
