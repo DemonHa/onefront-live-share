@@ -10,7 +10,7 @@ export default function joinRoom(
   userId: string,
   password?: string
 ) {
-  const room = rooms[roomId];
+  let room = rooms[roomId];
 
   if (room) {
     // User can't join if the password is incorrect or locked, or socket is already on the room
@@ -22,7 +22,7 @@ export default function joinRoom(
       return;
     }
   } else {
-    rooms[roomId] = {
+    room = rooms[roomId] = {
       owner: socket.id,
       password: uuidv4(),
       sockets: new Set([socket.id]),
@@ -38,5 +38,10 @@ export default function joinRoom(
 
   socket.on("disconnect", () => {
     socket.to(roomId).emit(Events.USER_DISCONNECTED, userId);
+    room.sockets.delete(socket.id);
+
+    if (room.sockets.size === 0) {
+      delete rooms[roomId];
+    }
   });
 }

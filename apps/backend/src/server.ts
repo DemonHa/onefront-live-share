@@ -5,6 +5,7 @@ import cors from "@fastify/cors";
 
 import config from "@/config";
 import socket from "./features/sockets";
+import convfastify from "convfastify";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -44,6 +45,13 @@ const getApp = () => {
       });
     },
   });
+
+  app.register(
+    convfastify()
+      .loadFrom(`${__dirname}/routes/**/*.js`)
+      .serveSwagger()
+      .register()
+  );
 
   return app;
 };

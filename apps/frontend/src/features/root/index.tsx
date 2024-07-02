@@ -13,7 +13,6 @@ const Root = () => {
 
   useEffect(() => {
     try {
-      // Request screen capture of the current tab
       navigator.mediaDevices
         .getUserMedia({
           video: true,
