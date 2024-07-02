@@ -19,6 +19,9 @@ export default route({
     const { userId } = req.params;
     const messages = await getMessagesByUserId(userId);
 
-    return { messages };
+    // TODO: Restrict access to only the authenticated user or costuner support
+    // Hint: Check for a specific role which identifies costumer support
+
+    return res.send({ messages });
   },
 });

@@ -9,6 +9,15 @@ export const getMessagesByUserId = (userId: Messages["sender"]) => {
   });
 };
 
+export const getSingleMessageForUsers = () => {
+  return prisma.messages.findMany({
+    distinct: ["sender"],
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+};
+
 export const createMessage = (
   userId: Messages["sender"],
   content: Messages["content"]

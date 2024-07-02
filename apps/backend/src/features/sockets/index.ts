@@ -10,8 +10,10 @@ export default function socket(io: Server) {
       authenticate(socket, token)
     );
 
-    socket.on(Events.JOIN_ROOM, (roomId: string, userId: string) =>
-      joinRoom(socket, roomId, userId)
+    socket.on(
+      Events.JOIN_ROOM,
+      (roomId: string, userId: string, password: string) =>
+        joinRoom(socket, roomId, userId, password)
     );
 
     socket.on(Events.CHAT_SUPPORT, (message: string) =>
