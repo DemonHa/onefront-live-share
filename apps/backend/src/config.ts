@@ -1,4 +1,4 @@
-import { cleanEnv, num } from "envalid";
+import { cleanEnv, num, str } from "envalid";
 
 import { name, version } from "@/../../package.json";
 
@@ -10,11 +10,16 @@ const envs = cleanEnv(process.env, {
     desc: "Port number",
     default: 4000,
   }),
+  CORS_ALLOWED_ORIGINS: str({
+    desc: "Allow origins",
+    default: "*",
+  }),
 });
 
 const config = {
   server: {
     port: envs.PORT,
+    cors: envs.CORS_ALLOWED_ORIGINS,
   },
   app: {
     name,
