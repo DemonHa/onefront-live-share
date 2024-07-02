@@ -1,5 +1,6 @@
-import { getMessagesByUserId } from "@/services/messages";
 import { route } from "convfastify";
+
+import { getMessagesByUserId } from "@/services/messages";
 
 export default route({
   method: "GET",
@@ -16,7 +17,6 @@ export default route({
   },
   handler: async (req, res) => {
     const { userId } = req.params;
-
     const messages = await getMessagesByUserId(userId);
 
     return { messages };
