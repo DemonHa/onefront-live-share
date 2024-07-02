@@ -20,3 +20,17 @@ export const markRoomAsCompleted = (id: Rooms["id"]) => {
     },
   });
 };
+
+export const createRoom = (
+  owner: Rooms["owner"],
+  password: Rooms["password"],
+  scheduledAt: Rooms["scheduledAt"]
+) => {
+  return prisma.rooms.create({
+    data: {
+      owner,
+      password,
+      scheduledAt,
+    },
+  });
+};
